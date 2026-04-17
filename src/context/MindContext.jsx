@@ -9,6 +9,7 @@ export function MindProvider({ children }) {
   const [filter, setFilter] = useState('all'); // all | dreams | joyful | scary | core
   const [muted, setMuted] = useState(true);
   const [hoveredMemory, setHoveredMemory] = useState(null);
+  const [panelCollapsed, setPanelCollapsed] = useState(true);
 
   // Derive theme colors from emotion
   const themes = {
@@ -35,6 +36,7 @@ export function MindProvider({ children }) {
       filter, setFilter,
       muted, setMuted,
       hoveredMemory, setHoveredMemory,
+      panelCollapsed, setPanelCollapsed,
     }}>
       {children}
     </MindContext.Provider>

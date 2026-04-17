@@ -53,7 +53,7 @@ function HUD({ theme, emotion, memoryCount }) {
   }, []);
 
   return (
-    <div style={{
+    <div className="hud-panel" style={{
       position: 'fixed', top: 16, right: 16, zIndex: 40,
       display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end',
       pointerEvents: 'none'
@@ -64,7 +64,7 @@ function HUD({ theme, emotion, memoryCount }) {
         { label: 'NODES', value: `${memoryCount} ACTIVE` },
         { label: 'TIME', value: time.toLocaleTimeString('en-US', { hour12: false }) },
       ].map(({ label, value }) => (
-        <div key={label} style={{
+        <div key={label} className={`hud-item hud-item-${label.toLowerCase()}`} style={{
           fontFamily: '"Share Tech Mono", monospace', fontSize: 10,
           color: theme.primary,
           background: 'rgba(0,0,0,0.7)',
@@ -85,7 +85,7 @@ function HUD({ theme, emotion, memoryCount }) {
 // Bottom title / branding
 function TitleBar({ theme }) {
   return (
-    <div style={{
+    <div className="title-bar-container" style={{
       position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 40,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '8px 24px',
@@ -94,7 +94,7 @@ function TitleBar({ theme }) {
       borderTop: `1px solid ${theme.primary}22`,
       pointerEvents: 'none'
     }}>
-      <div style={{ fontFamily: '"Share Tech Mono", monospace', fontSize: 11, color: theme.primary, opacity: 0.5, letterSpacing: 3 }}>
+      <div className="title-text" style={{ fontFamily: '"Share Tech Mono", monospace', fontSize: 11, color: theme.primary, opacity: 0.5, letterSpacing: 3, textAlign: 'center' }}>
         INSIDE THE MIND — DIGITAL CONSCIOUSNESS UI — SACRED TIMELINE
       </div>
     </div>
@@ -102,7 +102,7 @@ function TitleBar({ theme }) {
 }
 
 function MainLayout({ children }) {
-  const { phase, gravityOff, theme, emotion, filter } = useMind();
+  const { phase, gravityOff, theme, emotion, filter, panelCollapsed } = useMind();
   
   // Filter memories for HUD count
   const filteredMemories = useMemo(() => {
@@ -130,11 +130,12 @@ function MainLayout({ children }) {
       <TitleBar theme={theme} />
 
       {/* MAIN CONTENT AREA */}
-      <div style={{
+      <div className="main-layout-content" style={{
         position: 'fixed', inset: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        paddingLeft: 280, // offset for panel
+        paddingLeft: panelCollapsed ? 0 : 280, // offset for panel
         paddingBottom: 32,
+        transition: 'padding-left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1)',
       }}>
         {children}
       </div>

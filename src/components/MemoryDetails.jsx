@@ -48,6 +48,7 @@ export default function MemoryDetails() {
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 1.1, y: -20 }}
       transition={{ duration: 0.5, type: 'spring', damping: 20 }}
+      className="memory-details-container"
       style={{
         width: '100%',
         maxWidth: '700px',

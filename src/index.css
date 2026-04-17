@@ -108,3 +108,42 @@ html, body, #root {
   0%, 100% { box-shadow: 0 0 6px var(--c-primary); }
   50% { box-shadow: 0 0 16px var(--c-primary), 0 0 30px var(--c-primary); }
 }
+
+/* ── Mobile Optimizations ── */
+@media (max-width: 768px) {
+  .main-layout-content {
+    padding-left: 0 !important;
+  }
+  
+  .title-text {
+     font-size: 8px !important;
+     letter-spacing: 1px !important;
+  }
+  
+  .title-bar-container {
+     padding: 6px 10px !important;
+  }
+
+  .hud-panel {
+     top: 10px !important;
+     right: 10px !important;
+     gap: 4px !important;
+  }
+  
+  .hud-item {
+     font-size: 8px !important;
+     padding: 2px 6px !important;
+  }
+  
+  .hud-item-time {
+     display: none !important;
+  }
+
+  .memory-details-container {
+     padding: 20px !important;
+     max-width: 90% !important;
+     margin: 10px auto !important;
+     max-height: 85vh;
+     overflow-y: auto;
+  }
+}

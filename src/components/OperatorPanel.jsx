@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMind } from '../context/MindContext';
 
@@ -23,47 +23,72 @@ export default function OperatorPanel() {
     filter, setFilter,
     gravityOff, setGravityOff,
     muted, setMuted,
+    panelCollapsed, setPanelCollapsed,
   } = useMind();
-  const [collapsed, setCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+       setPanelCollapsed(true);
+    }
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) {
+         setPanelCollapsed(true);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [setPanelCollapsed]);
 
   return (
     <>
       {/* Collapse toggle */}
       <button
-        onClick={() => setCollapsed(c => !c)}
+        onClick={() => setPanelCollapsed(c => !c)}
         style={{
-          position: 'fixed', top: 20, left: collapsed ? 16 : 276,
+          position: 'fixed', top: 20, left: panelCollapsed ? 16 : (isMobile ? 16 : 276),
           zIndex: 60, fontFamily: '"Share Tech Mono", monospace',
           fontSize: 11, color: theme.primary,
           background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)',
           border: `1px solid ${theme.primary}44`, borderRadius: 6,
           padding: '4px 10px', cursor: 'pointer',
           boxShadow: `0 0 10px ${theme.primary}33`,
-          transition: 'left 0.3s ease',
+          transition: 'left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1)',
         }}
       >
-        {collapsed ? '▶ PANEL' : '◀ HIDE'}
+        {panelCollapsed ? '▶ PANEL' : (isMobile ? '▼ CLOSE' : '◀ HIDE')}
       </button>
 
       <AnimatePresence>
-        {!collapsed && (
+        {!panelCollapsed && (
           <motion.div
-            initial={{ x: -300, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -300, opacity: 0 }}
+            initial={{ x: isMobile ? 0 : -300, y: isMobile ? 300 : 0, opacity: 0 }}
+            animate={{ x: 0, y: 0, opacity: 1 }}
+            exit={{ x: isMobile ? 0 : -300, y: isMobile ? 300 : 0, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 200, damping: 26 }}
             style={{
-              position: 'fixed', top: 0, left: 0, bottom: 0,
-              width: 270, zIndex: 50,
-              background: 'rgba(0,0,0,0.82)',
+              position: 'fixed', 
+              top: isMobile ? 'auto' : 0, 
+              bottom: 0, 
+              left: 0, 
+              right: isMobile ? 0 : 'auto',
+              width: isMobile ? '100%' : 270, 
+              height: isMobile ? '80vh' : 'auto',
+              zIndex: 50,
+              background: 'rgba(0,0,0,0.92)',
               backdropFilter: 'blur(24px)',
               WebkitBackdropFilter: 'blur(24px)',
-              borderRight: `1px solid ${theme.primary}22`,
-              boxShadow: `4px 0 40px ${theme.primary}11`,
+              borderRight: isMobile ? 'none' : `1px solid ${theme.primary}22`,
+              borderTop: isMobile ? `1px solid ${theme.primary}55` : 'none',
+              boxShadow: isMobile ? `0 -4px 40px ${theme.primary}22` : `4px 0 40px ${theme.primary}11`,
               display: 'flex', flexDirection: 'column',
-              padding: '16px 14px',
+              padding: isMobile ? '30px 14px 16px' : '16px 14px',
               gap: 12,
               overflowY: 'auto',
+              borderTopLeftRadius: isMobile ? 24 : 0,
+              borderTopRightRadius: isMobile ? 24 : 0,
             }}
           >
             {/* Header */}
