@@ -2,13 +2,15 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMind } from './context/MindContext';
 import MatrixIntro from './components/MatrixIntro';
-import YggdrasilTree from './components/YggdrasilTree';
+import SacredTimeline from './components/SacredTimeline';
 import OperatorPanel from './components/OperatorPanel';
 import SoundEngine from './components/SoundEngine';
+import MemoryDetails from './components/MemoryDetails';
 import { memories } from './data/thoughts';
+import { Routes, Route, useLocation } from 'react-router-dom';
 
 // Floating ambient particles
-function Particles({ gravityOff, theme }) {
+function Particles({ gravityOff, theme, emotion }) {
   const particles = useMemo(() =>
     Array.from({ length: 30 }, (_, i) => ({
       id: i,
@@ -18,8 +20,11 @@ function Particles({ gravityOff, theme }) {
       dur: 12 + Math.random() * 15,
     })), []);
 
+  // Determine glitchiness based on emotion
+  const isAngry = emotion === 'angry';
+
   return (
-    <div className={`particles-container ${gravityOff ? 'gravity-off' : ''}`}>
+    <div className={`particles-container ${gravityOff ? 'gravity-off' : ''} ${isAngry ? 'glitch-active' : ''}`}>
       {particles.map(p => (
         <div
           key={p.id}
@@ -51,6 +56,7 @@ function HUD({ theme, emotion, memoryCount }) {
     <div style={{
       position: 'fixed', top: 16, right: 16, zIndex: 40,
       display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end',
+      pointerEvents: 'none'
     }}>
       {[
         { label: 'STATUS', value: 'ONLINE' },
@@ -86,79 +92,102 @@ function TitleBar({ theme }) {
       background: 'rgba(0,0,0,0.7)',
       backdropFilter: 'blur(10px)',
       borderTop: `1px solid ${theme.primary}22`,
+      pointerEvents: 'none'
     }}>
       <div style={{ fontFamily: '"Share Tech Mono", monospace', fontSize: 11, color: theme.primary, opacity: 0.5, letterSpacing: 3 }}>
-        INSIDE THE MIND — DIGITAL CONSCIOUSNESS UI — YGGDRASIL v2.0
+        INSIDE THE MIND — DIGITAL CONSCIOUSNESS UI — SACRED TIMELINE
       </div>
     </div>
   );
 }
 
-export default function App() {
-  const { phase, setPhase, gravityOff, filter, theme, emotion } = useMind();
-
-  const handleIntroComplete = useCallback(() => {
-    setPhase('main');
-  }, [setPhase]);
-
-  // Filter memories for tree
+function MainLayout({ children }) {
+  const { phase, gravityOff, theme, emotion, filter } = useMind();
+  
+  // Filter memories for HUD count
   const filteredMemories = useMemo(() => {
     if (filter === 'all') return memories;
     return memories.filter(m => m.type === filter || m.type === 'core');
   }, [filter]);
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: '#000', overflow: 'hidden' }}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1.5 }}
+      style={{ position: 'fixed', inset: 0 }}
+    >
+      {/* Ambient particles */}
+      <Particles gravityOff={gravityOff} theme={theme} emotion={emotion} />
+
+      {/* Operator Panel */}
+      <OperatorPanel />
+
+      {/* HUD */}
+      <HUD theme={theme} emotion={emotion} memoryCount={filteredMemories.length} />
+
+      {/* Title bar */}
+      <TitleBar theme={theme} />
+
+      {/* MAIN CONTENT AREA */}
+      <div style={{
+        position: 'fixed', inset: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        paddingLeft: 280, // offset for panel
+        paddingBottom: 32,
+      }}>
+        {children}
+      </div>
+    </motion.div>
+  )
+}
+
+export default function App() {
+  const { phase, setPhase, filter, gravityOff, emotion } = useMind();
+  const location = useLocation();
+
+  const handleIntroComplete = useCallback(() => {
+    setPhase('main');
+  }, [setPhase]);
+
+  const isAngry = emotion === 'angry';
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: isAngry ? '#1a0000' : '#000', overflow: 'hidden', transition: 'background 0.5s ease' }}>
       {/* Scanlines */}
-      <div className="scanlines" />
+      <div className={`scanlines ${isAngry ? 'glitch-active' : ''}`} />
       <div className="vignette" />
 
       {/* Sound */}
       <SoundEngine />
 
       {/* Matrix Intro */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {phase === 'matrix' && (
-          <MatrixIntro onComplete={handleIntroComplete} />
+          <MatrixIntro key="matrix-intro" onComplete={handleIntroComplete} />
         )}
       </AnimatePresence>
 
-      {/* Main Mind Interface */}
-      <AnimatePresence>
+      {/* Main Mind Interface (Routes) */}
+      <AnimatePresence mode="wait">
         {phase === 'main' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.5 }}
-            style={{ position: 'fixed', inset: 0 }}
-          >
-            {/* Ambient particles */}
-            <Particles gravityOff={gravityOff} theme={theme} />
-
-            {/* Operator Panel */}
-            <OperatorPanel />
-
-            {/* HUD */}
-            <HUD theme={theme} emotion={emotion} memoryCount={filteredMemories.length} />
-
-            {/* Title bar */}
-            <TitleBar theme={theme} />
-
-            {/* MAIN: Yggdrasil Tree — full center stage */}
-            <div style={{
-              position: 'fixed', inset: 0,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              paddingLeft: 280, // offset for panel
-              paddingBottom: 32,
-            }}>
-              <div className="tree-aura" />
-              <YggdrasilTree
-                memories={filteredMemories}
-                gravityOff={gravityOff}
-                filter={filter}
-              />
-            </div>
-          </motion.div>
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={
+              <MainLayout>
+                 <div className="tree-aura" />
+                 <SacredTimeline
+                   memories={memories}
+                   gravityOff={gravityOff}
+                   filter={filter}
+                 />
+              </MainLayout>
+            } />
+            <Route path="/memory/:id" element={
+               <MainLayout>
+                  <MemoryDetails />
+               </MainLayout>
+            } />
+          </Routes>
         )}
       </AnimatePresence>
     </div>
