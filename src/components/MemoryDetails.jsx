@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useMind } from '../context/MindContext';
 import { memories } from '../data/thoughts';
@@ -14,7 +14,10 @@ const EMOTION_COLORS = {
 export default function MemoryDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { theme } = useMind();
+
+  const dynamicDate = location.state?.dynamicDate;
 
   const memory = useMemo(() => memories.find(m => m.id === id), [id]);
 
@@ -107,7 +110,7 @@ export default function MemoryDetails() {
             marginTop: '8px',
             opacity: 0.8
           }}>
-            TIMESTAMP: {memory.year} // NODE TYPE: {memory.type.toUpperCase()}
+            TIMESTAMP: {dynamicDate || memory.year} // NODE TYPE: {memory.type.toUpperCase()}
           </div>
         </div>
         

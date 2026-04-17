@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMind } from '../context/MindContext';
 
@@ -87,8 +87,9 @@ function TimelineNode({ memory, cx, cy, gravityOff }) {
         fontSize="10"
         fill={colors.text}
         opacity={0.7}
+        style={{ transition: 'all 0.3s ease' }}
       >
-        {memory.year}
+        {hovered ? `${memory.year} // MOOD: ${memory.emotion.toUpperCase()}` : memory.year}
       </text>
     </g>
   );
@@ -96,12 +97,14 @@ function TimelineNode({ memory, cx, cy, gravityOff }) {
 
 export default function SacredTimeline({ memories, gravityOff, filter }) {
   const { theme } = useMind();
+  const navigate = useNavigate();
+  const svgRef = useRef(null);
 
   // Filter memories
   const filteredMemories = useMemo(() => {
-    let result = memories;
+    let result = memories.filter(m => m.type !== 'hidden');
     if (filter !== 'all') {
-      result = memories.filter(m => m.type === filter || m.type === 'core');
+      result = result.filter(m => m.type === filter || m.type === 'core');
     }
     // Sort chronologically (assuming year is string or number)
     return [...result].sort((a, b) => {
@@ -152,6 +155,7 @@ export default function SacredTimeline({ memories, gravityOff, filter }) {
     className="scrollbar-thin"
     >
       <svg
+        ref={svgRef}
         width={svgW}
         height={svgH}
         style={{ flexShrink: 0 }}
@@ -175,6 +179,43 @@ export default function SacredTimeline({ memories, gravityOff, filter }) {
             keyTimes="0; 0.5; 1"
             dur="8s"
             repeatCount="indefinite"
+          />
+          {/* Invisible Hit Area to make clicking easier */}
+          <path
+            d={timelinePath}
+            fill="none"
+            stroke="transparent"
+            strokeWidth={40}
+            style={{ cursor: 'pointer' }}
+            onClick={(e) => {
+              if (!svgRef.current) return;
+              const rect = svgRef.current.getBoundingClientRect();
+              const clickX = e.clientX - rect.left;
+              
+              let leftNode = positioned[0];
+              let rightNode = positioned[positioned.length - 1];
+              
+              for (let i = 0; i < positioned.length - 1; i++) {
+                if (clickX >= positioned[i].cx && clickX <= positioned[i+1].cx) {
+                  leftNode = positioned[i];
+                  rightNode = positioned[i+1];
+                  break;
+                }
+              }
+
+              let dynamicDate = 'Unknown Time';
+              if (leftNode && rightNode) {
+                if (leftNode === rightNode) {
+                   dynamicDate = leftNode.year;
+                } else if (leftNode.year === rightNode.year) {
+                   dynamicDate = leftNode.year;
+                } else {
+                   dynamicDate = `Between ${leftNode.year} and ${rightNode.year}`;
+                }
+              }
+
+              navigate('/memory/flow_line', { state: { dynamicDate } });
+            }}
           />
           <path
             d={timelinePath}

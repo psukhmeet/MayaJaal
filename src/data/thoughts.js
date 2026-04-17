@@ -20,6 +20,15 @@ export const memories = [
     secret: 'Every timeline converges here. This is where all variants become one.',
     branch: { side: 'center', level: 5 },
   },
+  {
+    id: 'flow_line',
+    label: 'Memory',
+    year: '2026-04-17 15:30:00',
+    type: 'hidden',
+    emotion: 'calm',
+    secret: 'The continuous thread of consciousness that binds all moments together.',
+    branch: { side: 'hidden', level: 0 },
+  },
 
   // Left branches — past / fear / loss
   {
