@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Outfit:wght@300;400;600;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS Custom Properties ── */
+:root {
+  --c-primary: #00FF41;
+  --c-glow: #00FF41;
+  --c-accent: #00cc33;
+}
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: #000;
+  font-family: 'Outfit', sans-serif;
+  color: #fff;
+}
+
+/* ── Scanlines ── */
+.scanlines {
+  position: fixed; inset: 0; z-index: 9;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px, transparent 3px,
+    rgba(0,255,65,0.015) 3px, rgba(0,255,65,0.015) 4px
+  );
+}
+
+/* ── Matrix green tint vignette ── */
+.vignette {
+  position: fixed; inset: 0; z-index: 8; pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    rgba(0, 20, 0, 0.6) 100%
+  );
+}
+
+/* ── Ambient green pulse behind tree ── */
+.tree-aura {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px; height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0,255,65,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  animation: aura-pulse 4s ease-in-out infinite;
+}
+
+@keyframes aura-pulse {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+}
+
+/* ── Floating particles ── */
+.particles-container {
+  position: fixed; inset: 0; z-index: 7; pointer-events: none; overflow: hidden;
+}
+.particle {
+  position: absolute; border-radius: 50%; opacity: 0;
+  animation: particle-rise linear infinite;
+}
+@keyframes particle-rise {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  5% { opacity: 0.6; }
+  90% { opacity: 0.3; }
+  100% { transform: translateY(-15vh) scale(1.5); opacity: 0; }
+}
+
+/* ── Gravity off — accelerated upward drift ── */
+.gravity-off .particle {
+  animation-duration: calc(var(--dur) * 0.4) !important;
+}
+
+/* ── Page fade-in ── */
+.main-reveal {
+  animation: fadeIn 1.5s ease forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Glitch flash on emotion change ── */
+@keyframes screen-glitch {
+  0%, 100% { clip-path: none; transform: none; }
+  20% { clip-path: inset(10% 0 80% 0); transform: translateX(-8px); }
+  40% { clip-path: inset(50% 0 30% 0); transform: translateX(8px); }
+  60% { clip-path: inset(80% 0 5% 0); transform: translateX(-4px); }
+  80% { clip-path: none; transform: translateX(4px); }
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--c-primary); border-radius: 2px; }
+
+/* ── pulse keyframe ── */
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 6px var(--c-primary); }
+  50% { box-shadow: 0 0 16px var(--c-primary), 0 0 30px var(--c-primary); }
+}
