@@ -95,7 +95,7 @@ function TitleBar({ theme }) {
       pointerEvents: 'none'
     }}>
       <div className="title-text" style={{ fontFamily: '"Share Tech Mono", monospace', fontSize: 11, color: theme.primary, opacity: 0.5, letterSpacing: 3, textAlign: 'center' }}>
-        INSIDE THE MIND — DIGITAL CONSCIOUSNESS UI — SACRED TIMELINE
+        MAYAJAAL — DIGITAL CONSCIOUSNESS UI — SACRED TIMELINE
       </div>
     </div>
   );
@@ -106,8 +106,9 @@ function MainLayout({ children }) {
   
   // Filter memories for HUD count
   const filteredMemories = useMemo(() => {
-    if (filter === 'all') return memories;
-    return memories.filter(m => m.type === filter || m.type === 'core');
+    if (filter === 'all') return memories.filter(m => m.type !== 'hidden');
+    const isFeeling = ['calm', 'joy', 'fear', 'angry'].includes(filter);
+    return memories.filter(m => m.type === 'core' || (isFeeling ? m.emotion === filter : m.type === filter));
   }, [filter]);
 
   return (

@@ -104,7 +104,8 @@ export default function SacredTimeline({ memories, gravityOff, filter }) {
   const filteredMemories = useMemo(() => {
     let result = memories.filter(m => m.type !== 'hidden');
     if (filter !== 'all') {
-      result = result.filter(m => m.type === filter || m.type === 'core');
+      const isFeeling = ['calm', 'joy', 'fear', 'angry'].includes(filter);
+      result = result.filter(m => m.type === 'core' || (isFeeling ? m.emotion === filter : m.type === filter));
     }
     // Sort chronologically (assuming year is string or number)
     return [...result].sort((a, b) => {

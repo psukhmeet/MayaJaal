@@ -4,9 +4,11 @@ import { useMind } from '../context/MindContext';
 
 const FILTERS = [
   { id: 'all', label: 'ALL MEMORIES', icon: '◈' },
+  { id: 'calm', label: 'FEELING: CALM', icon: '🌿' },
+  { id: 'joy', label: 'FEELING: JOY', icon: '☀' },
+  { id: 'fear', label: 'FEELING: FEAR', icon: '👁' },
+  { id: 'angry', label: 'FEELING: ANGRY', icon: '⚡' },
   { id: 'dreams', label: 'SHOW DREAMS', icon: '◎' },
-  { id: 'joyful', label: 'JOYFUL ONLY', icon: '◉' },
-  { id: 'scary', label: 'SCARY ONLY', icon: '⚠' },
   { id: 'core', label: 'CORE NODES', icon: '◆' },
 ];
 
@@ -105,7 +107,7 @@ export default function OperatorPanel() {
                   animation: 'pulse 2s infinite'
                 }} />
                 <span style={{ fontFamily: '"Share Tech Mono", monospace', fontSize: 11, color: theme.primary, fontWeight: 700 }}>
-                  TVA OPERATOR PANEL
+                  MAYAJAAL OPERATOR PANEL
                 </span>
               </div>
               <div style={{ fontFamily: '"Share Tech Mono", monospace', fontSize: 10, color: '#444' }}>
